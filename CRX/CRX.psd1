@@ -1,7 +1,7 @@
 
 @{
     RootModule        = 'CRX.psm1'
-    ModuleVersion     = '0.1.0'
+    ModuleVersion     = '0.1.1'
     GUID              = 'b5433b6c-b423-4049-8c5e-b3a50566fcf2'
     Author            = 'Alan Plocieniak'
     CompanyName       = 'Alan Plocieniak'
@@ -10,8 +10,11 @@
     PowerShellVersion    = '5.1'
     CompatiblePSEditions = 'Desktop', 'Core'
     FunctionsToExport = '*'
-    PrivateData       = @{
+    PrivateData          = @{
         PSData = @{
+            Tags       = @('powershell', 'crx', 'ps', 'power-shell', 'CRX', 'chrome', 'extension' )
+            LicenseUri = 'https://github.com/PowerShellLibrary/CRX/blob/master/LICENSE'
+            ProjectUri = 'https://github.com/PowerShellLibrary/CRX'
         }
     }
 }

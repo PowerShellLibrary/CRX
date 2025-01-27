@@ -1,7 +1,7 @@
 if (-not (Get-Module -Name Pester)) {
     Import-Module -Name Pester -Force
 }
-Import-Module .\src\CRX.psm1 -Force
+Import-Module .\CRX\CRX.psm1 -Force
 
 Describe 'CRX.Tests' {
     Context 'Get-CRXUpdateInfo' {
