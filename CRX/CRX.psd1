@@ -1,7 +1,7 @@
 
 @{
     RootModule           = 'CRX.psm1'
-    ModuleVersion        = '0.2.0'
+    ModuleVersion        = '0.2.1'
     GUID                 = 'b5433b6c-b423-4049-8c5e-b3a50566fcf2'
     Author               = 'Alan Plocieniak'
     CompanyName          = 'Alan Plocieniak'

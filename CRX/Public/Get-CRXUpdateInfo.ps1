@@ -9,7 +9,7 @@ function Get-CRXUpdateInfo {
     try {
         $update = Invoke-RestMethod -Uri $url
         $app = $update.gupdate.app
-        if ($app -and $app.updatecheck) {
+        if ($app -and $app.updatecheck -and $app.updatecheck.status -ne 'noupdate') {
             return [CRXUpdateInfo]::new($app.updatecheck)
         }
     }

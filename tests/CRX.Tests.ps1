@@ -4,7 +4,7 @@ if (-not (Get-Module -Name Pester)) {
 Import-Module .\CRX\CRX.psm1 -Force
 
 Describe 'CRX.Tests' {
-    BeforeAll{
+    BeforeAll {
         $testUrl = 'https://localhost.com/crx/blobs/ASuc5ohLVu-itAJfZqe6NgPkB0pCREbOH49PhxJq4pMdp7MWQx-ycGQt8dsD8WUSM_dTlB5sLwXljaUve7GTKh485NrRlNGdmT7O5aT9uS4R9jmIqNJBAMZSmuV9IZ0e0VV7jGd-rrI-YR5eoIra2Q/AOCLHCCCFDKJDDGPAAAJLDGLJHLLHGMD_4_0_0_0.crx'
         $testExtensionId = 'aoclhcccfdkjddgpaaajldgljhllhgmd'
     }
@@ -19,6 +19,24 @@ Describe 'CRX.Tests' {
         It 'Should return null for invalid extension ID' {
             $response = Get-CRXUpdateInfo "invalid"
             $response | Should -BeNullOrEmpty
+        }
+
+        It 'Should return null when no update is available' {
+            Mock -CommandName Invoke-RestMethod -ModuleName CRX -MockWith {
+                param ($Uri, $OutFile)
+                return @{
+                    gupdate = @{
+                        app = @{
+                            updatecheck = @{
+                                status = 'noupdate'
+                            }
+                        }
+                    }
+                }
+            }
+
+            $result = Get-CRXUpdateInfo -Id $testExtensionId
+            $result | Should -Be $null
         }
     }
 
