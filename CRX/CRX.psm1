@@ -1,7 +1,7 @@
 $Public = @( Get-ChildItem -Path $PSScriptRoot\Public -Recurse -Filter *.ps1 -ErrorAction SilentlyContinue )
 $Private = @( Get-ChildItem -Path $PSScriptRoot\Private -Recurse -Filter *.ps1 -ErrorAction SilentlyContinue )
 
-Foreach ($import in @($Public + $Private)) {
+Foreach ($import in @($Private + $Public )) {
     try {
         . $import.fullname
     }

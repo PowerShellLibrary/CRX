@@ -1,17 +1,25 @@
 function Test-CRXUpdateAvailable {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ById')]
     param (
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ById')]
         [string]$Id,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByInfo')]
+        $UpdateInfo,
 
         [Parameter(Mandatory = $true)]
         [version]$currentVersion
     )
 
-    $updateInfo = Get-CRXUpdateInfo $Id
+    if ($PSCmdlet.ParameterSetName -eq 'ById') {
+        $updateInfo = Get-CRXUpdateInfo -Id $Id
+    }
+    else {
+        $updateInfo = $UpdateInfo
+    }
+
     if ($updateInfo) {
-        $updateVersion = [version]$updateInfo.Version
-        return $updateVersion -gt $currentVersion
+        return $updateInfo.Version -gt $currentVersion
     }
     else {
         return $false
