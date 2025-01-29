@@ -3,6 +3,68 @@ if (-not (Get-Module -Name Pester)) {
 }
 Import-Module .\CRX\CRX.psm1 -Force
 
+Describe 'CRX Module Import' {
+    BeforeAll {
+        # hardcoded version - shipped with the module
+        $chromeVersion = [version]"132.0.6834.159"
+    }
+
+    Context 'When UpdateChromeVersion parameter is used' {
+        It 'Should get the latest stable Chrome version' {
+            Import-Module .\CRX\CRX.psm1 -ArgumentList $true -Force
+
+            $Global:LatestStableChromeVersion | Should -BeOfType [version]
+            $Global:LatestStableChromeVersion -gt $chromeVersion | Should -Be $true
+        }
+
+        It 'Should not get the latest stable Chrome version' {
+            Import-Module .\CRX\CRX.psm1 -ArgumentList $false -Force
+
+            $Global:LatestStableChromeVersion | Should -BeOfType [version]
+            $Global:LatestStableChromeVersion.ToString() | Should -Be $chromeVersion
+        }
+    }
+
+    Context 'When UpdateChromeVersion parameter is not used' {
+        It 'Should not get the latest stable Chrome version' {
+            Import-Module .\CRX\CRX.psm1 -Force
+
+            $Global:LatestStableChromeVersion | Should -BeOfType [version]
+            $Global:LatestStableChromeVersion.ToString() | Should -Be $chromeVersion
+        }
+    }
+}
+
+Describe 'Get-LatestStableChromeVersion' {
+    Context 'When API call is successful' {
+        It 'Should return a valid version' {
+            Mock -CommandName Invoke-RestMethod -ModuleName CRX -MockWith {
+                return @{
+                    channel   = 'Stable'
+                    milestone = 132
+                    platform  = "Windows"
+                    version   = "132.0.6834.160"
+                }
+            }
+
+            $result = Get-LatestStableChromeVersion
+            $result | Should -BeOfType [version]
+            $result.ToString() | Should -Be "132.0.6834.160"
+        }
+    }
+
+    Context 'When API call fails' {
+        It 'Should return $null' {
+            Mock -CommandName Invoke-RestMethod -ModuleName CRX -MockWith {
+                throw "API call failed"
+            }
+
+            $result = Get-LatestStableChromeVersion
+            $result | Should -Be $null
+        }
+    }
+}
+
 Describe 'CRX.Tests' {
     BeforeAll {
         $testUrl = 'https://localhost.com/crx/blobs/ASuc5ohLVu-itAJfZqe6NgPkB0pCREbOH49PhxJq4pMdp7MWQx-ycGQt8dsD8WUSM_dTlB5sLwXljaUve7GTKh485NrRlNGdmT7O5aT9uS4R9jmIqNJBAMZSmuV9IZ0e0VV7jGd-rrI-YR5eoIra2Q/AOCLHCCCFDKJDDGPAAAJLDGLJHLLHGMD_4_0_0_0.crx'
@@ -102,6 +164,22 @@ Describe 'CRX.Tests' {
             $result.FullName | Should -Be (Resolve-Path $expectedPath | Select-Object -ExpandProperty Path)
 
             Remove-Item -Path  $outputDir -Recurse -Force
+        }
+    }
+}
+
+InModuleScope CRX {
+    Describe 'Get-CRXUpdateUrl' {
+        BeforeAll {
+            $Global:LatestStableChromeVersion = [version]"128.0.0.256"
+            $testExtensionId = "aoclhcccfdkjddgpaaajldgljhllhgmd"
+
+        }
+
+        It 'Should return the correct update URL' {
+            $expectedUrl = "https://clients2.google.com/service/update2/crx?prodversion=128.0.0.256&acceptformat=crx2,crx3&x=id%3D$testExtensionId%26installsource%3Dondemand%26uc"
+            $result = Get-CRXUpdateUrl -Id $testExtensionId
+            $result | Should -Be $expectedUrl
         }
     }
 }

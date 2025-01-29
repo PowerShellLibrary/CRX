@@ -17,6 +17,13 @@ Install-Module -Name CRX
 Import-Module -Name CRX
 ```
 
+> [!NOTE]
+> **Latest stable chrome version is hardcoded in `$Global:LatestStableChromeVersion` by default**
+>
+> You can update it manually or use `-ArgumentList` during module import so the latest version will be automatically fetched from https://chromiumdash.appspot.com
+>
+> `Import-Module CRX -ArgumentList $true`
+
 ### Example Usage
 **Downloads the CRX file for a specified extension.**
 ```powershell
